@@ -1,17 +1,14 @@
-#create user “adminuser”
-useradd adminuser
-#set password for “adminuser”
- echo "passwordwinter" | passwd --stdin adminuser
-#create group admin
-groupadd admin
-echo '%admin ALL=(ALL:ALL) ALL' >> /etc/sudoers
-#grant for “adminuser” sudoer permission
-usermod -a -G admin adminuser
-#create user “poweruser”
-useradd poweruser
-#grant for “poweruser” permission for iptables command
-echo 'poweruser ALL=(ALL:ALL) /usr/sbin/iptables' >> /etc/sudoers
-#allow “poweruser” to read home directory of “adminuser” 
-usermod -a -G adminuser poweruser
-#list all of files with SUID bit set
-find / -type d -perm 4000 -exec ls -ld {} \;
+#create test folders
+mkdir /var/folder{1,2}
+#copy service file
+cat /home/vagrant/task.service > /etc/systemd/system/task.service
+#reload all daemons
+systemctl daemon-reload
+#run the daemon
+systemctl start task.service
+#enable autostart
+systemctl enable task.service
+#change directory to cron.d
+cd /etc/cron.d
+#every minute during working days log logged in users to the file
+echo '* * * * 1-5 root w>>/var/log/logged-in.log' >mycron
